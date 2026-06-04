@@ -47,11 +47,12 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 .opt-label{display:flex;align-items:flex-start;gap:10px;background:var(--card2);border:1.5px solid var(--border);border-radius:9px;padding:10px 14px;cursor:pointer;transition:all .15s}
 .opt-label:hover{border-color:var(--gold)}
 .opt-label input[type=radio]{display:none}
-.opt-label.selected{border-color:var(--gold);background:#1e1c14}
+.opt-label.selected{border-color:var(--gold);background:#fbeae8}
 .opt-label.locked{cursor:default}
 .opt-radio{width:16px;height:16px;border:2px solid var(--border);border-radius:50%;flex-shrink:0;margin-top:1px;transition:all .15s;background:transparent}
 .opt-label.selected .opt-radio{border-color:var(--gold);background:var(--gold)}
 .opt-text{font-size:12px;color:var(--text);line-height:1.6}
+.opt-label.selected .opt-text{color:var(--gold);font-weight:600}
 
 /* TEXTAREA */
 .q-textarea{width:100%;background:#ede8dc;border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:12px;outline:none;resize:vertical;min-height:80px;transition:border-color .2s}
@@ -75,7 +76,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 .submit-info{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7}
 
 /* TOAST */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1c1f25;border:1px solid var(--border);border-radius:10px;padding:10px 20px;font-size:13px;font-weight:600;color:var(--text);z-index:999;transition:transform .3s;white-space:nowrap}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#2c2c2c;border:1px solid var(--border);border-radius:10px;padding:10px 20px;font-size:13px;font-weight:600;color:#fff;z-index:999;transition:transform .3s;white-space:nowrap}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.ok{border-color:var(--green);color:var(--green)}
 .toast.err{border-color:var(--red);color:var(--red)}
@@ -191,6 +192,7 @@ CREATE POLICY "allow all" ON exam_submissions FOR ALL USING (true);</div>
       <div style="display:flex;flex-direction:column;gap:10px">
         <button class="btn btn-gold" onclick="showExamEntry()" style="justify-content:center;padding:14px">📝 Я — кандидат (пройти тест)</button>
         <button class="btn" onclick="showReviewerLogin()" style="justify-content:center;padding:14px;background:var(--card2);border:1.5px solid var(--border);color:var(--text)">🔐 Я — РОП (перевірити результати)</button>
+        <button class="btn" onclick="showViewerLogin()" style="justify-content:center;padding:14px;background:var(--card2);border:1.5px solid var(--border);color:var(--text)">👁️ Я — коуч (перегляд)</button>
       </div>
     </div>
   </div>
@@ -227,6 +229,44 @@ CREATE POLICY "allow all" ON exam_submissions FOR ALL USING (true);</div>
         <button class="btn btn-gold" onclick="checkRevPin()" style="flex:1;justify-content:center">Увійти →</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- VIEWER (COACH) LOGIN -->
+<div id="viewer-login-screen" style="display:none">
+  <div class="setup-wrap">
+    <div class="setup-box">
+      <div style="font-size:48px;margin-bottom:14px">👁️</div>
+      <div class="setup-title">Вхід коуча</div>
+      <div class="setup-desc">Режим перегляду: бачиш актуальні питання тесту та результати кандидатів. <strong>Оцінювати не можна</strong> — лише дивитися.</div>
+      <div class="setup-field" style="text-align:left"><label>Пін-код</label><input id="view-pin" type="password" placeholder="••••" maxlength="6" onkeydown="if(event.key==='Enter')checkViewerPin()"></div>
+      <div id="view-pin-err" style="color:var(--red);font-size:12px;margin-top:4px;min-height:18px"></div>
+      <div style="margin-top:16px;display:flex;gap:8px">
+        <button class="btn btn-outline" onclick="showRole()">← Назад</button>
+        <button class="btn btn-gold" onclick="checkViewerPin()" style="flex:1;justify-content:center">Увійти →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VIEWER (COACH) PANEL -->
+<div id="viewer-screen" style="display:none">
+  <div class="review-hdr">
+    <div>
+      <div class="review-title">👁️ Режим перегляду — Коуч</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">Тільки перегляд: питання та результати</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <span class="badge badge-blue" id="viewer-count-badge"></span>
+      <button class="btn" onclick="logoutReviewer()" style="background:var(--card2);border:1px solid var(--border);color:var(--muted);font-size:11px;padding:6px 12px">Вийти</button>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="tabs">
+      <div class="tab active" onclick="viewerTab('questions')">📋 Питання тесту</div>
+      <div class="tab" onclick="viewerTab('results')">📊 Результати</div>
+    </div>
+    <div id="viewer-content"></div>
   </div>
 </div>
 
@@ -301,7 +341,10 @@ CREATE POLICY "allow all" ON exam_submissions FOR ALL USING (true);</div>
 // ══════════════════════════════════════════════════════
 // CONFIG
 // ══════════════════════════════════════════════════════
-const REVIEWER_PIN = '1011'; // ← змінити на потрібний
+const REVIEWER_PIN = '1011'; // ← пін РОП (повний доступ + оцінювання)
+const VIEWER_PIN = '5050';   // ← пін коуча (тільки перегляд, без оцінювання)
+
+let isViewerMode = false;
 
 let SB_URL = '', SB_KEY = '';
 let currentCandidate = null;
@@ -423,7 +466,7 @@ const QUESTIONS = [
     correct:0},
   {id:31,type:'radio',pts:2,text:'Який варіант ти не можеш запропонувати купити клієнту, навіть якщо він сам такий захоче (за регламентами компанії):',
     opts:['2 банки по 200 грамів.','3 банки по 200 грамів','1 пластиковий контейнер ікри (500 грамів)','1 банку вагою 500/440 грамів'],
-    correct:1},
+    correct:0},
   {id:32,type:'radio',pts:2,text:'Яка встановлена норма успішних дзвінків за день у відділі?',
     opts:['Її немає, головне — високий прибуток.','Скільки вийде, можна і 30-50 дзвінків, якщо висока конверсія.','Згідно з регламентом від керівника відділу: від 60 та більше.','Згідно з регламентом від керівника відділу: від 75 та більше.'],
     correct:3},
@@ -441,7 +484,7 @@ const QUESTIONS = [
   {section:'Розділ 7: Відкриті завдання (перевіряє РОП)', sectionSub:'Питання 36–43 — пиши розгорнуту відповідь'},
   {id:36,type:'open',pts:2,text:'Завдання: Напиши вступну фразу («Гачок») клієнту, який купував у нас 3 маленькі банки по 230 грамів на Новий Рік.'},
   {id:37,type:'open',pts:2,text:'Завдання: Клієнт каже: «Мені минулого разу ікра здалася якоюсь рідкою». Напиши скрипт-відпрацювання такого заперечення.'},
-  {id:38,type:'open',pts:2,text:'Завдання: Які помилки допущені в розмові? (Опиши, що менеджер зробив неправильно в типовій ситуації відмови — клієнт каже "не цікаво" і менеджер одразу закриває розмову)'},
+  {id:38,type:'open',pts:2,text:'Завдання: Прослухай запис дзвінка за посиланням і напиши, які помилки допущені в розмові менеджера (привітання/гачок, виявлення потреби, робота із запереченням, закриття).<br><a href="https://drive.google.com/file/d/150uW2n8erjwOG4r5dcVi66xIs3wfqScA/view" target="_blank" rel="noopener" style="display:inline-block;margin-top:8px;color:var(--blue);font-weight:700;text-decoration:underline">🔊 Прослухати запис дзвінка</a>'},
   {id:39,type:'open',pts:2,text:'Завдання: Напиши скрипт «Спуску / Альтернативи». Ти запропонував набір за 1549 грн, клієнт каже «Зараз немає таких грошей».'},
   {id:40,type:'open',pts:2,text:'Завдання: Що конкретно ти напишеш у робочий чат "Склад+ОП", якщо треба змінити адресу в уже переданому на склад замовленні?'},
   {id:41,type:'open',pts:2,text:'Завдання: Клієнт роздратовано каже у відповідь на «Гачок»: «Я ж казав не дзвонити. Напишіть на Viber!». Що зробиш в Odoo? А що скажеш клієнту?'},
@@ -483,7 +526,7 @@ function saveSetup(){
 // SCREENS
 // ══════════════════════════════════════════════════════
 function hideAll(){
-  ['setup-screen','role-screen','entry-screen','reviewer-login-screen','exam-screen','success-screen','reviewer-screen','review-detail-screen']
+  ['setup-screen','role-screen','entry-screen','reviewer-login-screen','viewer-login-screen','viewer-screen','exam-screen','success-screen','reviewer-screen','review-detail-screen']
     .forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
 }
 function show(id){hideAll();document.getElementById(id).style.display='block';}
@@ -494,6 +537,7 @@ function showReviewerLogin(){show('reviewer-login-screen');document.getElementBy
 function checkRevPin(){
   const pin=document.getElementById('rev-pin').value;
   if(pin===REVIEWER_PIN){
+    isViewerMode=false;
     show('reviewer-screen');
     loadSubmissions();
   } else {
@@ -501,13 +545,85 @@ function checkRevPin(){
   }
 }
 
-function logoutReviewer(){showRole();}
+function logoutReviewer(){isViewerMode=false;showRole();}
+
+// ── VIEWER (COACH) ──
+function showViewerLogin(){show('viewer-login-screen');document.getElementById('view-pin').value='';document.getElementById('view-pin-err').textContent='';}
+
+function checkViewerPin(){
+  const pin=document.getElementById('view-pin').value;
+  if(pin===VIEWER_PIN){
+    isViewerMode=true;
+    show('viewer-screen');
+    viewerTab('questions');
+  } else {
+    document.getElementById('view-pin-err').textContent='Невірний пін-код';
+  }
+}
+
+function viewerTab(tab){
+  document.querySelectorAll('#viewer-screen .tab').forEach((t,i)=>{
+    t.classList.toggle('active',(i===0&&tab==='questions')||(i===1&&tab==='results'));
+  });
+  if(tab==='questions') renderViewerQuestions();
+  else renderViewerResults();
+}
+
+function renderViewerQuestions(){
+  document.getElementById('viewer-count-badge').textContent='👁️ Перегляд';
+  const el=document.getElementById('viewer-content');
+  let html='<div style="background:#eef3f8;border:1px solid var(--blue);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--blue)">Це актуальні питання тесту. Правильні відповіді закритих питань позначені зеленим. Якщо щось треба змінити — передай керівнику.</div>';
+  QUESTIONS.forEach(item=>{
+    if(item.section){
+      html+=`<div class="sec-hdr"><div class="sec-hdr-title">${item.section}</div><div class="sec-hdr-sub">${item.sectionSub||''}</div></div>`;
+      return;
+    }
+    if(item.type==='radio'){
+      html+=`<div class="rq-card">
+        <div class="rq-top"><div class="rq-num">Питання ${item.id} · ${item.pts} б.</div></div>
+        <div class="rq-question">${item.text.replace(/\n/g,'<br>')}</div>
+        ${item.opts.map((o,i)=>`<div class="rq-answer" style="border-left:3px solid ${i===item.correct?'var(--green)':'transparent'};${i===item.correct?'background:#c8e6d0;':''}">${i===item.correct?'✅ ':''}${o}</div>`).join('')}
+      </div>`;
+    } else {
+      html+=`<div class="rq-card open">
+        <div class="rq-top"><div class="rq-num">Питання ${item.id} · ${item.pts} б. · Відкрите</div></div>
+        <div class="rq-question">${item.text.replace(/\n/g,'<br>')}</div>
+      </div>`;
+    }
+  });
+  el.innerHTML=html;
+}
+
+async function renderViewerResults(){
+  const el=document.getElementById('viewer-content');
+  el.innerHTML='<div class="empty">Завантаження…</div>';
+  try{
+    await fetchSubmissions();
+    const pending=allSubmissions.filter(s=>s.status==='pending').length;
+    document.getElementById('viewer-count-badge').textContent='Робіт: '+allSubmissions.length+(pending?' · ⏳ '+pending:'');
+    if(!allSubmissions.length){el.innerHTML='<div class="empty">Поки що немає робіт 📋</div>';return;}
+    el.innerHTML=allSubmissions.map(s=>`
+      <div class="sub-card" onclick="openReview('${s.id}',true)">
+        <div class="sub-top">
+          <div>
+            <div class="sub-name">${s.candidate_name}</div>
+            <div class="sub-meta">${s.candidate_email} · ${formatDt(s.submitted_at)}</div>
+          </div>
+          <div style="text-align:right">
+            <div class="sub-score">${s.total_score} / ${MAX_TOTAL}</div>
+            <div style="margin-top:4px">${s.status==='reviewed'?'<span class="badge badge-green">✅ Перевірено</span>':'<span class="badge badge-gold">⏳ На перевірці</span>'}</div>
+          </div>
+        </div>
+      </div>`).join('');
+  }catch(e){el.innerHTML='<div class="empty">Помилка: '+e.message+'</div>';}
+}
 
 function startExam(){
   const name=document.getElementById('cand-name').value.trim();
   const email=document.getElementById('cand-email').value.trim();
   if(!name){toast('Введи повне ім\'я!','err');return;}
   if(!email||!email.includes('@')){toast('Введи коректний email!','err');return;}
+  isViewerMode=false;
   currentCandidate={name,email};
   currentAnswers={};
   renderExam();
@@ -640,10 +756,15 @@ async function submitExam(){
 // ══════════════════════════════════════════════════════
 // REVIEWER
 // ══════════════════════════════════════════════════════
+async function fetchSubmissions(){
+  const data=await sbFetch('exam_submissions?select=*&order=submitted_at.desc');
+  allSubmissions=data||[];
+  return allSubmissions;
+}
+
 async function loadSubmissions(){
   try{
-    const data=await sbFetch('exam_submissions?select=*&order=submitted_at.desc');
-    allSubmissions=data||[];
+    await fetchSubmissions();
     renderSubList(currentRevTab);
     const pending=allSubmissions.filter(s=>s.status==='pending').length;
     document.getElementById('rev-pending-badge').textContent=pending>0?'⏳ '+pending+' на перевірці':'✅ Всі перевірені';
@@ -679,20 +800,26 @@ function renderSubList(tab){
 }
 
 function backToList(){
-  show('reviewer-screen');
-  loadSubmissions();
+  if(isViewerMode){ show('viewer-screen'); viewerTab('results'); }
+  else { show('reviewer-screen'); loadSubmissions(); }
 }
 
-function openReview(id){
+function openReview(id, readOnly=false){
   const s=allSubmissions.find(s=>s.id===id);
   if(!s) return;
   currentReviewId=id;
   document.getElementById('rd-title').textContent='Робота: '+s.candidate_name;
   document.getElementById('rd-meta').textContent=s.candidate_email+' · '+formatDt(s.submitted_at);
   document.getElementById('rd-score-badge').textContent='Бал: '+s.total_score+' / '+MAX_TOTAL;
+  const saveBtn=document.getElementById('rd-save-btn');
+  if(saveBtn) saveBtn.style.display=readOnly?'none':'inline-flex';
 
   const wrap=document.getElementById('review-detail-wrap');
   let html='';
+
+  if(readOnly){
+    html+=`<div style="background:#eef3f8;border:1px solid var(--blue);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--blue)">👁️ Режим перегляду (коуч). Оцінки виставляє РОП — тут лише перегляд.</div>`;
+  }
 
   // Auto questions
   html+=`<div class="sec-hdr" style="margin-top:0"><div class="sec-hdr-title">Закриті питання (автоперевірка)</div><div class="sec-hdr-sub">Авто-бал: ${s.auto_score} / ${MAX_AUTO}</div></div>`;
@@ -715,7 +842,7 @@ function openReview(id){
   });
 
   // Open questions
-  html+=`<div class="sec-hdr"><div class="sec-hdr-title">Відкриті завдання (ручна перевірка)</div><div class="sec-hdr-sub">Оціни кожну відповідь</div></div>`;
+  html+=`<div class="sec-hdr"><div class="sec-hdr-title">Відкриті завдання (ручна перевірка)</div><div class="sec-hdr-sub">${readOnly?'Оцінки РОП (тільки перегляд)':'Оціни кожну відповідь'}</div></div>`;
 
   QUESTIONS.filter(q=>q.id&&q.type==='open').forEach(q=>{
     const ans=s.answers[q.id]||'';
@@ -723,6 +850,22 @@ function openReview(id){
     const grade=ms[q.id];
     const graded=grade!==undefined;
     const cardCls=graded?(grade>0?'graded-ok':'graded-no'):'';
+    let controls;
+    if(readOnly){
+      const cmt=ms['comment_'+q.id];
+      controls=`<div class="grade-row"><span class="badge ${graded?(grade>0?'badge-green':'badge-red'):'badge-gold'}">${graded?(grade>0?'✅ Зараховано ('+grade+'/'+q.pts+')':'❌ Не зараховано (0/'+q.pts+')'):'⏳ Ще не перевірено'}</span>${cmt?'<span style="font-size:11px;color:var(--muted)">💬 '+escapeHtml(cmt)+'</span>':''}</div>`;
+    } else {
+      let scoreBtns='';
+      for(let sc=0; sc<=q.pts; sc++){
+        const cls = sc===0 ? 'no' : 'ok';
+        const lbl = sc===0 ? '❌ Не зараховано (0)' : ('✅ Оцінка '+sc);
+        scoreBtns += `<button class="grade-btn ${cls} ${graded&&grade===sc?'active':''}" id="gbtn_${q.id}_${sc}" onclick="gradeOpen(${q.id},${sc})">${lbl}</button>`;
+      }
+      controls=`<div class="grade-row">
+        ${scoreBtns}
+        <input class="grade-comment" id="gcomment_${q.id}" placeholder="Коментар РОП (необов'язково)" value="${ms['comment_'+q.id]||''}">
+      </div>`;
+    }
     html+=`<div class="rq-card open ${cardCls}" id="oc_${q.id}">
       <div class="rq-top">
         <div class="rq-num">Питання ${q.id} · Відкрите · ${q.pts} балів</div>
@@ -730,26 +873,33 @@ function openReview(id){
       </div>
       <div class="rq-question">${q.text.replace(/\n/g,'<br>')}</div>
       <div class="rq-answer-label">Відповідь кандидата:</div>
-      <div class="rq-answer">${ans||'<em style="color:var(--muted)">Не заповнено</em>'}</div>
-      <div class="grade-row">
-        <button class="grade-btn ok ${graded&&grade===q.pts?'active':''}" id="gbtn_ok_${q.id}" onclick="gradeOpen(${q.id},${q.pts})">✅ Зараховано (+${q.pts})</button>
-        <button class="grade-btn no ${graded&&grade===0?'active':''}" id="gbtn_no_${q.id}" onclick="gradeOpen(${q.id},0)">❌ Не зараховано (0)</button>
-        <input class="grade-comment" id="gcomment_${q.id}" placeholder="Коментар (необов'язково)" value="${ms['comment_'+q.id]||''}">
-      </div>
+      <div class="rq-answer">${ans?escapeHtml(ans):'<em style="color:var(--muted)">Не заповнено</em>'}</div>
+      ${controls}
     </div>`;
   });
 
-  html+=`<div class="submit-card">
-    <div class="submit-info" id="rd-total-info">Виставте оцінки за всі відкриті завдання і збережіть результат.</div>
-    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-      <input class="grade-comment" id="rev-final-comment" placeholder="Загальний коментар РОП..." style="max-width:300px;padding:9px 12px" value="${s.reviewer_comment||''}">
-      <button class="btn btn-gold" onclick="saveGrades()">💾 Зберегти результат</button>
-    </div>
-  </div>`;
+  if(readOnly){
+    const ms=s.manual_scores||{};
+    const manualTotal=QUESTIONS.filter(q=>q.id&&q.type==='open').reduce((sum,q)=>sum+(ms[q.id]||0),0);
+    const total=s.auto_score+manualTotal;
+    html+=`<div class="submit-card">
+      <div class="submit-info">Автобал: ${s.auto_score}/${MAX_AUTO} + Відкриті: ${manualTotal}/${MAX_OPEN} = Загалом: ${total}/${MAX_TOTAL}</div>
+      <div>${s.status==='reviewed'?'<span class="badge badge-green">✅ Перевірено РОП</span>':'<span class="badge badge-gold">⏳ Ще на перевірці у РОП</span>'}</div>
+      ${s.reviewer_comment?`<div style="margin-top:12px;background:#ede8dc;border-radius:8px;padding:10px 12px;font-size:12px;text-align:left">💬 <strong>Коментар РОП:</strong> ${escapeHtml(s.reviewer_comment)}</div>`:''}
+    </div>`;
+  } else {
+    html+=`<div class="submit-card">
+      <div class="submit-info" id="rd-total-info">Виставте оцінки за всі відкриті завдання і збережіть результат.</div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <input class="grade-comment" id="rev-final-comment" placeholder="Загальний коментар РОП..." style="max-width:300px;padding:9px 12px" value="${s.reviewer_comment||''}">
+        <button class="btn btn-gold" onclick="saveGrades()">💾 Зберегти результат</button>
+      </div>
+    </div>`;
+  }
 
   wrap.innerHTML=html;
   show('review-detail-screen');
-  updateRdScore();
+  if(!readOnly) updateRdScore();
 }
 
 let pendingGrades={};
@@ -762,11 +912,11 @@ function gradeOpen(qId,score){
   // Update comment
   const commentEl=document.getElementById('gcomment_'+qId);
   if(commentEl) s.manual_scores['comment_'+qId]=commentEl.value;
-  // Update UI
-  const okBtn=document.getElementById('gbtn_ok_'+qId);
-  const noBtn=document.getElementById('gbtn_no_'+qId);
-  if(okBtn) okBtn.classList.toggle('active',score===q.pts);
-  if(noBtn) noBtn.classList.toggle('active',score===0);
+  // Toggle active state across all score buttons of this question
+  for(let sc=0; sc<=q.pts; sc++){
+    const b=document.getElementById('gbtn_'+qId+'_'+sc);
+    if(b) b.classList.toggle('active',sc===score);
+  }
   const scoreEl=document.getElementById('oscore_'+qId);
   if(scoreEl){scoreEl.textContent=score+' / '+q.pts;scoreEl.style.color=score>0?'var(--green)':'var(--red)';}
   const card=document.getElementById('oc_'+qId);
@@ -821,6 +971,10 @@ function formatDt(dt){
   if(!dt) return '';
   const d=new Date(dt);
   return d.toLocaleDateString('uk-UA')+' '+d.toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 }
 
 let toastTimer;

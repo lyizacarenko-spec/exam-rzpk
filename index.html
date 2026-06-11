@@ -15,7 +15,6 @@
 }
 body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;line-height:1.6;min-height:100vh}
 
-/* SETUP */
 .setup-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
 .setup-box{background:var(--card);border:2px dashed var(--gold);border-radius:20px;padding:32px;width:100%;max-width:500px;text-align:center}
 .setup-title{font-family:'Montserrat',sans-serif;font-weight:800;font-size:18px;color:var(--gold);margin-bottom:8px}
@@ -25,7 +24,6 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 .setup-field input{width:100%;background:#ede8dc;border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:12px;outline:none}
 .setup-field input:focus{border-color:var(--gold)}
 
-/* EXAM SCREEN */
 .exam-hdr{background:#f5f0e8;border-bottom:2px solid var(--gold);padding:14px 20px;position:sticky;top:0;z-index:100}
 .exam-hdr-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
 .exam-title{font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:var(--gold)}
@@ -36,52 +34,62 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 
 .wrap{max-width:720px;margin:0 auto;padding:20px 16px 80px}
 
-/* QUESTION */
-.q-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px;transition:border-color .3s}
 .q-num{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
 .q-text{font-size:13px;color:var(--text);line-height:1.7;margin-bottom:14px;font-weight:500}
-.q-text em{color:var(--gold);font-style:normal}
 
-/* RADIO OPTIONS */
 .opts{display:flex;flex-direction:column;gap:8px}
-.opt-label{display:flex;align-items:flex-start;gap:10px;background:var(--card2);border:1.5px solid var(--border);border-radius:9px;padding:10px 14px;cursor:pointer;transition:all .15s}
-.opt-label:hover{border-color:var(--gold)}
-.opt-label input[type=radio]{display:none}
-.opt-label.selected{border-color:var(--gold);background:#fbeae8}
-.opt-label.locked{cursor:default}
-.opt-radio{width:16px;height:16px;border:2px solid var(--border);border-radius:50%;flex-shrink:0;margin-top:1px;transition:all .15s;background:transparent}
-.opt-label.selected .opt-radio{border-color:var(--gold);background:var(--gold)}
-.opt-text{font-size:12px;color:var(--text);line-height:1.6}
-.opt-label.selected .opt-text{color:var(--gold);font-weight:600}
+.opt-label{display:flex;align-items:flex-start;gap:10px;background:var(--card2);border:1.5px solid var(--border);border-radius:9px;padding:10px 14px;cursor:pointer;transition:all .2s;user-select:none}
+.opt-label:hover:not(.locked){border-color:var(--gold)}
+.opt-label.locked{cursor:default;pointer-events:none}
 
-/* TEXTAREA */
+/* feedback states */
+.opt-label.is-correct{border-color:var(--green)!important;background:#d5f0e0!important}
+.opt-label.is-wrong{border-color:var(--red)!important;background:#fde8e8!important}
+.opt-label.show-correct{border-color:var(--green)!important;background:#d5f0e0!important}
+
+.opt-radio{width:16px;height:16px;border:2px solid var(--border);border-radius:50%;flex-shrink:0;margin-top:2px;transition:all .15s;background:transparent}
+.opt-label.is-correct .opt-radio{border-color:var(--green);background:var(--green)}
+.opt-label.is-wrong .opt-radio{border-color:var(--red);background:var(--red)}
+.opt-label.show-correct .opt-radio{border-color:var(--green);background:var(--green)}
+
+.opt-text{font-size:12px;color:var(--text);line-height:1.6;flex:1}
+.opt-label.is-correct .opt-text{color:#1a6e3c;font-weight:700}
+.opt-label.is-wrong .opt-text{color:var(--red);font-weight:700;text-decoration:line-through;opacity:.75}
+.opt-label.show-correct .opt-text{color:#1a6e3c;font-weight:700}
+
+.opt-badge{font-size:15px;flex-shrink:0;margin-top:0;display:none}
+
+/* feedback banner */
+.feedback-banner{margin-top:12px;border-radius:9px;padding:10px 14px;font-size:12px;font-weight:600;display:none;align-items:flex-start;gap:8px;line-height:1.6;animation:fadeIn .25s ease}
+.feedback-banner.ok{background:#d5f0e0;border:1.5px solid var(--green);color:#1a6e3c}
+.feedback-banner.err{background:#fde8e8;border:1.5px solid var(--red);color:#a01010}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+/* live score badge in header */
+.score-live{font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;color:var(--green);background:#d5f0e0;border:1px solid var(--green);border-radius:20px;padding:3px 10px}
+
 .q-textarea{width:100%;background:#ede8dc;border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:12px;outline:none;resize:vertical;min-height:80px;transition:border-color .2s}
 .q-textarea:focus{border-color:var(--gold)}
-.q-textarea:disabled{opacity:.6;cursor:not-allowed}
 
-/* SECTION HEADER */
 .sec-hdr{background:linear-gradient(90deg,#ede8dc,var(--card));border-radius:10px;padding:10px 16px;margin-bottom:10px;margin-top:20px;border-left:3px solid var(--gold)}
 .sec-hdr-title{font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;color:var(--gold)}
 .sec-hdr-sub{font-size:11px;color:var(--muted);margin-top:2px}
 
-/* BUTTONS */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:9px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;cursor:pointer;border:none;transition:all .15s}
-.btn-gold{background:var(--gold);color:#0e0f11}
+.btn-gold{background:var(--gold);color:#fff}
 .btn-gold:hover{background:var(--gold2)}
 .btn-gold:disabled{opacity:.4;cursor:not-allowed}
 .btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--muted)}
 
-/* SUBMIT BLOCK */
 .submit-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-top:20px;text-align:center}
 .submit-info{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7}
 
-/* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#2c2c2c;border:1px solid var(--border);border-radius:10px;padding:10px 20px;font-size:13px;font-weight:600;color:#fff;z-index:999;transition:transform .3s;white-space:nowrap}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.ok{border-color:var(--green);color:var(--green)}
 .toast.err{border-color:var(--red);color:var(--red)}
 
-/* SUCCESS */
 .success-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
 .success-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px;width:100%;max-width:500px;text-align:center}
 .success-icon{font-size:56px;margin-bottom:16px}
@@ -89,7 +97,6 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 .success-desc{font-size:13px;color:var(--muted);line-height:1.8}
 .success-info{background:#ede8dc;border-radius:10px;padding:14px;margin-top:16px;font-size:12px;color:var(--text);line-height:1.8;text-align:left}
 
-/* REVIEW PANEL */
 .review-hdr{background:#f5f0e8;border-bottom:2px solid var(--gold);padding:14px 20px;position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
 .review-title{font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:var(--gold)}
 .badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700}
@@ -98,7 +105,6 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 .badge-red{background:#2a1515;border:1px solid var(--red);color:var(--red)}
 .badge-blue{background:#151e2a;border:1px solid var(--blue);color:var(--blue)}
 
-/* REVIEW QUESTION */
 .rq-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
 .rq-card.correct{border-left:3px solid var(--green)}
 .rq-card.wrong{border-left:3px solid var(--red)}
@@ -121,7 +127,6 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 .grade-comment{flex:1;min-width:160px;background:#ede8dc;border:1px solid var(--border);border-radius:7px;padding:6px 10px;color:var(--text);font-family:'Inter',sans-serif;font-size:11px;outline:none}
 .grade-comment:focus{border-color:var(--gold)}
 
-/* SUBMISSIONS LIST */
 .sub-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer;transition:border-color .2s}
 .sub-card:hover{border-color:var(--gold)}
 .sub-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
@@ -129,58 +134,16 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 .sub-meta{font-size:11px;color:var(--muted);margin-top:3px}
 .sub-score{font-family:'Montserrat',sans-serif;font-weight:800;font-size:18px;color:var(--gold)}
 
-/* FILTER */
-.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.filter-select{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--text);font-size:12px;font-family:'Inter',sans-serif;outline:none}
-
-/* TABS */
 .tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
 .tab{padding:8px 16px;border-radius:9px;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);background:var(--card2);border:1px solid var(--border);transition:all .2s}
-.tab.active{background:var(--gold);border-color:var(--gold);color:#0e0f11}
+.tab.active{background:var(--gold);border-color:var(--gold);color:#fff}
 
 .empty{text-align:center;color:var(--muted);padding:40px;font-size:13px}
-.field label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:4px}
-.field input,.field select{width:100%;background:#ede8dc;border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:12px;outline:none}
-.field input:focus,.field select:focus{border-color:var(--gold)}
 
 @media(max-width:600px){.exam-hdr-top{flex-direction:column;align-items:flex-start}}
 </style>
 </head>
 <body>
-
-<!-- SETUP -->
-<div id="setup-screen" style="display:none;visibility:hidden">
-  <div class="setup-wrap">
-    <div class="setup-box">
-      <div class="setup-title">⚙️ Налаштування</div>
-      <div class="setup-desc">Введи дані Supabase проекту. Після збереження цей екран більше не з'явиться.</div>
-      <div class="setup-field"><label>Supabase URL</label><input id="setup-url" placeholder="https://xxxx.supabase.co" type="url"></div>
-      <div class="setup-field"><label>Anon Key</label><input id="setup-key" placeholder="eyJ..."></div>
-      <div style="margin-top:16px">
-        <button class="btn btn-gold" onclick="saveSetup()" style="width:100%;justify-content:center">💾 Зберегти і продовжити</button>
-      </div>
-      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);text-align:left">
-        <div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.8px">📋 SQL для таблиці</div>
-        <div style="background:#0a0000;border:1px solid var(--border);border-radius:8px;padding:10px;font-family:monospace;font-size:10px;color:#1a5276;line-height:1.8;white-space:pre-wrap">CREATE TABLE exam_submissions (
-  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  candidate_name text NOT NULL,
-  candidate_email text NOT NULL,
-  answers jsonb NOT NULL,
-  auto_score numeric(5,2),
-  manual_scores jsonb,
-  total_score numeric(5,2),
-  status text DEFAULT 'pending',
-  reviewer_comment text,
-  submitted_at timestamptz DEFAULT now(),
-  reviewed_at timestamptz,
-  reviewed_by text
-);
-ALTER TABLE exam_submissions ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "allow all" ON exam_submissions FOR ALL USING (true);</div>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- ROLE SELECT -->
 <div id="role-screen" style="display:none">
@@ -232,7 +195,7 @@ CREATE POLICY "allow all" ON exam_submissions FOR ALL USING (true);</div>
   </div>
 </div>
 
-<!-- VIEWER (COACH) LOGIN -->
+<!-- VIEWER LOGIN -->
 <div id="viewer-login-screen" style="display:none">
   <div class="setup-wrap">
     <div class="setup-box">
@@ -249,12 +212,12 @@ CREATE POLICY "allow all" ON exam_submissions FOR ALL USING (true);</div>
   </div>
 </div>
 
-<!-- VIEWER (COACH) PANEL -->
+<!-- VIEWER PANEL -->
 <div id="viewer-screen" style="display:none">
   <div class="review-hdr">
     <div>
       <div class="review-title">👁️ Режим перегляду — Коуч</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:2px">Тільки перегляд: питання та результати</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">Тільки перегляд</div>
     </div>
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
       <span class="badge badge-blue" id="viewer-count-badge"></span>
@@ -278,7 +241,10 @@ CREATE POLICY "allow all" ON exam_submissions FOR ALL USING (true);</div>
         <div class="exam-title">📋 Екзаменаційний тест — РЗПК</div>
         <div class="exam-sub" id="exam-sub-name"></div>
       </div>
-      <div class="exam-prog" id="exam-prog">0 / 43</div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span class="score-live" id="live-score-badge">✅ 0 балів</span>
+        <div class="exam-prog" id="exam-prog">0 / 43</div>
+      </div>
     </div>
     <div class="prog-bar"><div class="prog-fill" id="exam-prog-fill" style="width:0%"></div></div>
   </div>
@@ -300,9 +266,7 @@ CREATE POLICY "allow all" ON exam_submissions FOR ALL USING (true);</div>
 <!-- REVIEWER PANEL -->
 <div id="reviewer-screen" style="display:none">
   <div class="review-hdr">
-    <div>
-      <div class="review-title">🔐 Панель РОП — Результати тестів</div>
-    </div>
+    <div><div class="review-title">🔐 Панель РОП — Результати тестів</div></div>
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
       <span class="badge badge-gold" id="rev-pending-badge"></span>
       <button class="btn" onclick="logoutReviewer()" style="background:var(--card2);border:1px solid var(--border);color:var(--muted);font-size:11px;padding:6px 12px">Вийти</button>
@@ -334,30 +298,23 @@ CREATE POLICY "allow all" ON exam_submissions FOR ALL USING (true);</div>
   <div class="wrap" id="review-detail-wrap"></div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════════════════
-// CONFIG
-// ══════════════════════════════════════════════════════
-const REVIEWER_PIN = '1011'; // ← пін РОП (повний доступ + оцінювання)
-const VIEWER_PIN = '5050';   // ← пін коуча (тільки перегляд, без оцінювання)
+const REVIEWER_PIN = '1011';
+const VIEWER_PIN = '5050';
 
 let isViewerMode = false;
-
 let SB_URL = '', SB_KEY = '';
 let currentCandidate = null;
 let currentAnswers = {};
+let answeredQuestions = {}; // qId -> chosen index (locked after pick)
+let liveAutoScore = 0;
 let currentReviewId = null;
 let currentRevTab = 'list';
 let allSubmissions = [];
 
-// ══════════════════════════════════════════════════════
-// QUESTIONS
-// ══════════════════════════════════════════════════════
 const QUESTIONS = [
-  // SECTION 1: Робота в Odoo
   {section:'Розділ 1: Робота в Odoo та регламенти', sectionSub:'Питання 1–7'},
   {id:1,type:'radio',pts:2,text:'Клієнт просить перетелефонувати через 2 місяці, бо зараз ще має запаси ікри. Твої дії в системі Odoo?',
     opts:['Поставлю статус "Втрачено".','Буду домовлятися про передзвін через 21 день, якщо успіх - поставлю "Передзвін" і дію "Дзвінок" на конкретний день з коментарем.','Залишу "В роботі" з міткою "Відмова", щоб не забути.'],
@@ -381,7 +338,6 @@ const QUESTIONS = [
     opts:['Передаси менеджеру "Х" це замовлення, бо в нього стоїть передзвін на цього клієнта, написавши йому в особисті повідомлення','Оформиш замовлення самостійно в новій нагоді, а нагоду з передзвоном на 07.04.2026 втратиш, оповістивши менеджера "Х" про сплив дії передзвону','Оформиш замовлення самостійно в нагоду з передзвоном на 07.04.2026, замовлення зарахується менеджеру "Х" у статистику','Правильної відповіді немає.'],
     correct:1},
 
-  // SECTION 2: Показники
   {section:'Розділ 2: Показники ефективності', sectionSub:'Питання 8–12'},
   {id:8,type:'radio',pts:2,text:'У тебе за день 75 успішних дзвінків, але лише 4 замовлення. Який показник у тебе зараз критично "страждає"?',
     opts:['Approv (Конверсія).','Кількість дзвінків.','Середній чек.'],
@@ -399,7 +355,6 @@ const QUESTIONS = [
     opts:['Замовлень до кількості успішних розмов.','Замовлень до кількості набраних номерів.','Замовлень до кількості робочих годин.'],
     correct:0},
 
-  // SECTION 3: Скрипт продажу
   {section:'Розділ 3: Скрипт продажу та техніки', sectionSub:'Питання 13–22'},
   {id:13,type:'radio',pts:2,text:'Транскрипт: "Іване, добрий день, це компанія Ікорка. Ви у нас брали ікру півроку тому. Вам цікаві акції зараз?". Яку помилку допущено на етапі "Гачка"?',
     opts:['Не запропонував знижку 50%.','Немає інфоприводу та перевірки лояльності типу "як вам ікра минулого разу?".','Занадто довге привітання.'],
@@ -432,7 +387,6 @@ const QUESTIONS = [
     opts:['А) Можливість заробити більше з цього замовлення.','Б) Можливість зробити допродаж та підвищити середній чек.','В) Відповіді А і Б правильні.','Г) Правильної відповіді немає. Менеджер не може продати одну банку.'],
     correct:2},
 
-  // SECTION 4: Продукт
   {section:'Розділ 4: Знання продукту', sectionSub:'Питання 23–25'},
   {id:23,type:'radio',pts:2,text:'Чим відрізняється ікра горбуші від ікри кети?',
     opts:['Горбуша — універсальна класика з легкою гірчинкою, середнього розміру, кета — крупніша, має вершковий присмак, вважається рідкісною.','Горбуша дрібна та "помаранчева", кета темно-червона та крупна, з гірчинкою.','Немає різниці, це одна риба - лосось.'],
@@ -444,7 +398,6 @@ const QUESTIONS = [
     opts:['Осетрову, горбуші, кетову преміальну ікру або ексклюзивні набори.','Найдешевшу горбушу, щуку або форель про запас, але більше по кількості банок.','Нічого не пропонувати, бо в нас немає преміальної ікри, лише бюджетна.'],
     correct:0},
 
-  // SECTION 5: Заперечення
   {section:'Розділ 5: Робота із запереченнями', sectionSub:'Питання 26–29'},
   {id:26,type:'radio',pts:2,text:'"У конкурентів дешевше". Твій найкращий аргумент:',
     opts:['"Я розумію Вас. Там шахраї, не вірте їм. Візьміть у нас набір 998, це вигідніше..."','Локалізувати заперечення — пояснити, що Ikorka Shop працює вже 9-ий рік на ринку і клієнти завжди повертаються за повторними замовленнями (навести аргументи). Якщо потрібен дожим — ще 200 грамів ікри на подарунок.','Пояснити клієнту, що якщо він зараз не зробить замовлення, то Відділ якості потім додасть його номер телефону в чорний список...'],
@@ -459,7 +412,6 @@ const QUESTIONS = [
     opts:['1 заперечення (ультиматум клієнту).','2 заперечення (перевести істинне заперечення в хибне і обробити хибне).','3 заперечення (аргументація + альтернатива).'],
     correct:2},
 
-  // SECTION 6: Ситуаційні
   {section:'Розділ 6: Ситуаційні завдання', sectionSub:'Питання 30–35'},
   {id:30,type:'radio',pts:2,text:'Клієнт пише тобі на Viber протягом 4-5 днів після того, як ти робив йому замовлення і він отримав ікру: "У замовленні прийшла розбита банка ікри!". Клієнт надсилає фото інциденту. Твої дії:',
     opts:['Вибачення клієнту + інформація передана у Відділ якості → Пропозиція компенсації/бонусу для відновлення довіри після погодження з Відділом якості.','Сказати, що це провина Нової Пошти і далі робити обдзвін лідів.','Пояснити що ми не несемо відповідальність за цілісність товару при пересилці.'],
@@ -480,7 +432,6 @@ const QUESTIONS = [
     opts:['Телеграм повідомлення в особисті в робочий час.','Передати через Старшого менеджера/Керівника відділу.','Робочий чат в робочий час з обов\'язковим тегом (@) відповідальної особи.'],
     correct:2},
 
-  // SECTION 7: Відкриті завдання
   {section:'Розділ 7: Відкриті завдання (перевіряє РОП)', sectionSub:'Питання 36–43 — пиши розгорнуту відповідь'},
   {id:36,type:'open',pts:2,text:'Завдання: Напиши вступну фразу («Гачок») клієнту, який купував у нас 3 маленькі банки по 230 грамів на Новий Рік.'},
   {id:37,type:'open',pts:2,text:'Завдання: Клієнт каже: «Мені минулого разу ікра здалася якоюсь рідкою». Напиши скрипт-відпрацювання такого заперечення.'},
@@ -493,13 +444,11 @@ const QUESTIONS = [
 ];
 
 const MAX_AUTO = QUESTIONS.filter(q=>q.type==='radio').reduce((s,q)=>s+(q.pts||2),0);
-const MAX_OPEN = QUESTIONS.filter(q=>q.type==='open').reduce((s,q)=>s+(q.pts||2),0);
+const MAX_OPEN  = QUESTIONS.filter(q=>q.type==='open').reduce((s,q)=>s+(q.pts||2),0);
 const MAX_TOTAL = MAX_AUTO + MAX_OPEN;
 
-// ══════════════════════════════════════════════════════
-// SUPABASE
-// ══════════════════════════════════════════════════════
-async function sbFetch(path, method='GET', body=null){
+// ── Supabase ──
+async function sbFetch(path,method='GET',body=null){
   const opts={method,headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Prefer':'return=representation'}};
   if(body) opts.body=JSON.stringify(body);
   const res=await fetch(SB_URL+'/rest/v1/'+path,opts);
@@ -508,92 +457,48 @@ async function sbFetch(path, method='GET', body=null){
   return ct.includes('json')?res.json():null;
 }
 
-// ══════════════════════════════════════════════════════
-// SETUP
-// ══════════════════════════════════════════════════════
-function saveSetup(){
-  const url=document.getElementById('setup-url').value.trim().replace(/\/$/,'');
-  const key=document.getElementById('setup-key').value.trim();
-  if(!url||!key){toast('Заповни обидва поля!','err');return;}
-  localStorage.setItem('exam_sb_url',url);
-  localStorage.setItem('exam_sb_key',key);
-  SB_URL=url;SB_KEY=key;
-  showRole();
-  toast('✅ Налаштування збережено!','ok');
-}
-
-// ══════════════════════════════════════════════════════
-// SCREENS
-// ══════════════════════════════════════════════════════
+// ── Screens ──
 function hideAll(){
-  ['setup-screen','role-screen','entry-screen','reviewer-login-screen','viewer-login-screen','viewer-screen','exam-screen','success-screen','reviewer-screen','review-detail-screen']
-    .forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+  ['role-screen','entry-screen','reviewer-login-screen','viewer-login-screen','viewer-screen',
+   'exam-screen','success-screen','reviewer-screen','review-detail-screen']
+  .forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
 }
 function show(id){hideAll();document.getElementById(id).style.display='block';}
 function showRole(){show('role-screen');}
 function showExamEntry(){show('entry-screen');}
 function showReviewerLogin(){show('reviewer-login-screen');document.getElementById('rev-pin').value='';document.getElementById('rev-pin-err').textContent='';}
-
 function checkRevPin(){
-  const pin=document.getElementById('rev-pin').value;
-  if(pin===REVIEWER_PIN){
-    isViewerMode=false;
-    show('reviewer-screen');
-    loadSubmissions();
-  } else {
-    document.getElementById('rev-pin-err').textContent='Невірний пін-код';
-  }
+  if(document.getElementById('rev-pin').value===REVIEWER_PIN){isViewerMode=false;show('reviewer-screen');loadSubmissions();}
+  else document.getElementById('rev-pin-err').textContent='Невірний пін-код';
 }
-
 function logoutReviewer(){isViewerMode=false;showRole();}
-
-// ── VIEWER (COACH) ──
 function showViewerLogin(){show('viewer-login-screen');document.getElementById('view-pin').value='';document.getElementById('view-pin-err').textContent='';}
-
 function checkViewerPin(){
-  const pin=document.getElementById('view-pin').value;
-  if(pin===VIEWER_PIN){
-    isViewerMode=true;
-    show('viewer-screen');
-    viewerTab('questions');
-  } else {
-    document.getElementById('view-pin-err').textContent='Невірний пін-код';
-  }
+  if(document.getElementById('view-pin').value===VIEWER_PIN){isViewerMode=true;show('viewer-screen');viewerTab('questions');}
+  else document.getElementById('view-pin-err').textContent='Невірний пін-код';
 }
 
+// ── Viewer ──
 function viewerTab(tab){
-  document.querySelectorAll('#viewer-screen .tab').forEach((t,i)=>{
-    t.classList.toggle('active',(i===0&&tab==='questions')||(i===1&&tab==='results'));
-  });
-  if(tab==='questions') renderViewerQuestions();
-  else renderViewerResults();
+  document.querySelectorAll('#viewer-screen .tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&tab==='questions')||(i===1&&tab==='results')));
+  if(tab==='questions') renderViewerQuestions(); else renderViewerResults();
 }
-
 function renderViewerQuestions(){
   document.getElementById('viewer-count-badge').textContent='👁️ Перегляд';
-  const el=document.getElementById('viewer-content');
-  let html='<div style="background:#eef3f8;border:1px solid var(--blue);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--blue)">Це актуальні питання тесту. Правильні відповіді закритих питань позначені зеленим. Якщо щось треба змінити — передай керівнику.</div>';
+  let html='<div style="background:#eef3f8;border:1px solid var(--blue);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--blue)">Актуальні питання тесту. Правильні відповіді закритих питань виділені зеленим.</div>';
   QUESTIONS.forEach(item=>{
-    if(item.section){
-      html+=`<div class="sec-hdr"><div class="sec-hdr-title">${item.section}</div><div class="sec-hdr-sub">${item.sectionSub||''}</div></div>`;
-      return;
-    }
+    if(item.section){html+=`<div class="sec-hdr"><div class="sec-hdr-title">${item.section}</div><div class="sec-hdr-sub">${item.sectionSub||''}</div></div>`;return;}
     if(item.type==='radio'){
-      html+=`<div class="rq-card">
-        <div class="rq-top"><div class="rq-num">Питання ${item.id} · ${item.pts} б.</div></div>
+      html+=`<div class="rq-card"><div class="rq-top"><div class="rq-num">Питання ${item.id} · ${item.pts} б.</div></div>
         <div class="rq-question">${item.text.replace(/\n/g,'<br>')}</div>
         ${item.opts.map((o,i)=>`<div class="rq-answer" style="border-left:3px solid ${i===item.correct?'var(--green)':'transparent'};${i===item.correct?'background:#c8e6d0;':''}">${i===item.correct?'✅ ':''}${o}</div>`).join('')}
       </div>`;
     } else {
-      html+=`<div class="rq-card open">
-        <div class="rq-top"><div class="rq-num">Питання ${item.id} · ${item.pts} б. · Відкрите</div></div>
-        <div class="rq-question">${item.text.replace(/\n/g,'<br>')}</div>
-      </div>`;
+      html+=`<div class="rq-card open"><div class="rq-top"><div class="rq-num">Питання ${item.id} · ${item.pts} б. · Відкрите</div></div><div class="rq-question">${item.text.replace(/\n/g,'<br>')}</div></div>`;
     }
   });
-  el.innerHTML=html;
+  document.getElementById('viewer-content').innerHTML=html;
 }
-
 async function renderViewerResults(){
   const el=document.getElementById('viewer-content');
   el.innerHTML='<div class="empty">Завантаження…</div>';
@@ -605,45 +510,38 @@ async function renderViewerResults(){
     el.innerHTML=allSubmissions.map(s=>`
       <div class="sub-card" onclick="openReview('${s.id}',true)">
         <div class="sub-top">
-          <div>
-            <div class="sub-name">${s.candidate_name}</div>
-            <div class="sub-meta">${s.candidate_email} · ${formatDt(s.submitted_at)}</div>
-          </div>
-          <div style="text-align:right">
-            <div class="sub-score">${s.total_score} / ${MAX_TOTAL}</div>
-            <div style="margin-top:4px">${s.status==='reviewed'?'<span class="badge badge-green">✅ Перевірено</span>':'<span class="badge badge-gold">⏳ На перевірці</span>'}</div>
-          </div>
+          <div><div class="sub-name">${s.candidate_name}</div><div class="sub-meta">${s.candidate_email} · ${formatDt(s.submitted_at)}</div></div>
+          <div style="text-align:right"><div class="sub-score">${s.total_score} / ${MAX_TOTAL}</div>
+            <div style="margin-top:4px">${s.status==='reviewed'?'<span class="badge badge-green">✅ Перевірено</span>':'<span class="badge badge-gold">⏳ На перевірці</span>'}</div></div>
         </div>
       </div>`).join('');
   }catch(e){el.innerHTML='<div class="empty">Помилка: '+e.message+'</div>';}
 }
 
+// ── Start exam ──
 function startExam(){
   const name=document.getElementById('cand-name').value.trim();
   const email=document.getElementById('cand-email').value.trim();
   if(!name){toast('Введи повне ім\'я!','err');return;}
   if(!email||!email.includes('@')){toast('Введи коректний email!','err');return;}
-  isViewerMode=false;
   currentCandidate={name,email};
   currentAnswers={};
+  answeredQuestions={};
+  liveAutoScore=0;
   renderExam();
   show('exam-screen');
   document.getElementById('exam-sub-name').textContent=name+' · '+email;
 }
 
-// ══════════════════════════════════════════════════════
-// EXAM RENDER
-// ══════════════════════════════════════════════════════
+// ── Render exam ──
 function renderExam(){
   const wrap=document.getElementById('exam-wrap');
   let html='';
-  let qNum=0;
   QUESTIONS.forEach(item=>{
     if(item.section){
       html+=`<div class="sec-hdr"><div class="sec-hdr-title">${item.section}</div><div class="sec-hdr-sub">${item.sectionSub||''}</div></div>`;
       return;
     }
-    qNum++;
     if(item.type==='radio'){
       html+=`<div class="q-card" id="qcard_${item.id}">
         <div class="q-num">Питання ${item.id} · ${item.pts} бал${item.pts>1?'и':''}</div>
@@ -653,8 +551,10 @@ function renderExam(){
             <label class="opt-label" id="opt_${item.id}_${i}" onclick="pickOpt(${item.id},${i})">
               <div class="opt-radio"></div>
               <div class="opt-text">${o}</div>
+              <span class="opt-badge" id="optbadge_${item.id}_${i}"></span>
             </label>`).join('')}
         </div>
+        <div class="feedback-banner" id="feedback_${item.id}"></div>
       </div>`;
     } else {
       html+=`<div class="q-card" id="qcard_${item.id}">
@@ -664,87 +564,104 @@ function renderExam(){
       </div>`;
     }
   });
-
-  // Submit button
   html+=`<div class="submit-card">
     <div class="submit-info">Перевір всі відповіді перед відправкою.<br><strong style="color:var(--red)">Після відправки змінити відповіді неможливо!</strong></div>
     <button class="btn btn-gold" id="submit-btn" onclick="submitExam()" style="padding:12px 32px;font-size:13px">📤 Відправити тест</button>
   </div>`;
-
   wrap.innerHTML=html;
   updateProgress();
+  updateLiveScore();
 }
 
-function pickOpt(qId,optIdx){
+// ── Pick option: lock immediately + show feedback ──
+function pickOpt(qId, optIdx){
   const q=QUESTIONS.find(q=>q.id===qId);
-  if(!q) return;
-  // Deselect all
+  if(!q||answeredQuestions[qId]!==undefined) return; // already answered
+
+  answeredQuestions[qId]=optIdx;
+  currentAnswers[qId]=optIdx;
+  const correct=(optIdx===q.correct);
+  if(correct) liveAutoScore+=(q.pts||2);
+
+  // Style all options
   q.opts.forEach((_,i)=>{
     const el=document.getElementById('opt_'+qId+'_'+i);
-    if(el) el.classList.remove('selected');
+    const badge=document.getElementById('optbadge_'+qId+'_'+i);
+    if(!el) return;
+    el.classList.add('locked');
+    el.style.pointerEvents='none';
+    badge.style.display='inline';
+
+    if(i===optIdx && correct){
+      el.classList.add('is-correct');
+      badge.textContent='✅';
+    } else if(i===optIdx && !correct){
+      el.classList.add('is-wrong');
+      badge.textContent='❌';
+    } else if(i===q.correct && !correct){
+      el.classList.add('show-correct');
+      badge.textContent='✅';
+    } else {
+      badge.style.display='none';
+    }
   });
-  // Select chosen
-  const chosen=document.getElementById('opt_'+qId+'_'+optIdx);
-  if(chosen) chosen.classList.add('selected');
-  currentAnswers[qId]=optIdx;
+
+  // Feedback banner
+  const banner=document.getElementById('feedback_'+qId);
+  if(banner){
+    if(correct){
+      banner.className='feedback-banner ok';
+      banner.innerHTML='✅ <strong>Правильно!</strong> +'+q.pts+' балів';
+    } else {
+      banner.className='feedback-banner err';
+      banner.innerHTML='❌ <strong>Неправильно.</strong> Правильна відповідь позначена зеленим вище.';
+    }
+    banner.style.display='flex';
+  }
+
   updateProgress();
+  updateLiveScore();
 }
 
-function saveOpen(qId,val){
-  currentAnswers[qId]=val;
-  updateProgress();
-}
+function saveOpen(qId,val){currentAnswers[qId]=val;updateProgress();}
 
 function updateProgress(){
-  const radioQs=QUESTIONS.filter(q=>q.id&&q.type==='radio');
-  const openQs=QUESTIONS.filter(q=>q.id&&q.type==='open');
-  const answered=radioQs.filter(q=>currentAnswers[q.id]!==undefined).length +
-                 openQs.filter(q=>currentAnswers[q.id]&&currentAnswers[q.id].trim()).length;
-  const total=radioQs.length+openQs.length;
+  const rQs=QUESTIONS.filter(q=>q.id&&q.type==='radio');
+  const oQs=QUESTIONS.filter(q=>q.id&&q.type==='open');
+  const answered=rQs.filter(q=>answeredQuestions[q.id]!==undefined).length+
+                 oQs.filter(q=>currentAnswers[q.id]&&currentAnswers[q.id].trim()).length;
+  const total=rQs.length+oQs.length;
   document.getElementById('exam-prog').textContent=answered+' / '+total;
   document.getElementById('exam-prog-fill').style.width=(answered/total*100)+'%';
 }
 
+function updateLiveScore(){
+  const b=document.getElementById('live-score-badge');
+  if(b) b.textContent='✅ '+liveAutoScore+' балів';
+}
+
 async function submitExam(){
-  // Validate
-  const radioQs=QUESTIONS.filter(q=>q.id&&q.type==='radio');
-  const unanswered=radioQs.filter(q=>currentAnswers[q.id]===undefined);
+  const rQs=QUESTIONS.filter(q=>q.id&&q.type==='radio');
+  const unanswered=rQs.filter(q=>answeredQuestions[q.id]===undefined);
   if(unanswered.length>0){
-    toast('Відповідай на всі закриті питання! Пропущено: '+unanswered.length,'err');
-    // Scroll to first unanswered
+    toast('Дай відповідь на всі закриті питання! Пропущено: '+unanswered.length,'err');
     const el=document.getElementById('qcard_'+unanswered[0].id);
-    if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
-    el.style.borderColor='var(--red)';
-    setTimeout(()=>el.style.borderColor='',2000);
+    if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.borderColor='var(--red)';setTimeout(()=>el.style.borderColor='',2000);}
     return;
   }
-
   const btn=document.getElementById('submit-btn');
   btn.disabled=true;btn.textContent='Відправляємо...';
-
-  // Calculate auto score
-  let autoScore=0;
-  radioQs.forEach(q=>{
-    if(currentAnswers[q.id]===q.correct) autoScore+=(q.pts||2);
-  });
-
   const rec={
-    candidate_name:currentCandidate.name,
-    candidate_email:currentCandidate.email,
+    candidate_name:currentCandidate.name,candidate_email:currentCandidate.email,
     answers:JSON.parse(JSON.stringify(currentAnswers)),
-    auto_score:autoScore,
-    manual_scores:{},
-    total_score:autoScore,
-    status:'pending'
+    auto_score:liveAutoScore,manual_scores:{},total_score:liveAutoScore,status:'pending'
   };
-
   try{
     await sbFetch('exam_submissions','POST',rec);
-    // Show success
     document.getElementById('success-info').innerHTML=
       `<strong>Ім'я:</strong> ${currentCandidate.name}<br>
        <strong>Email:</strong> ${currentCandidate.email}<br>
-       <strong>Автоматичний бал:</strong> ${autoScore} / ${MAX_AUTO} (тести з варіантами)<br>
+       <strong>Бал за закриті питання:</strong> ${liveAutoScore} / ${MAX_AUTO}<br>
        <strong>Відкриті завдання:</strong> на перевірці у РОП`;
     show('success-screen');
   }catch(e){
@@ -753,97 +670,69 @@ async function submitExam(){
   }
 }
 
-// ══════════════════════════════════════════════════════
-// REVIEWER
-// ══════════════════════════════════════════════════════
+// ── Reviewer ──
 async function fetchSubmissions(){
   const data=await sbFetch('exam_submissions?select=*&order=submitted_at.desc');
-  allSubmissions=data||[];
-  return allSubmissions;
+  allSubmissions=data||[];return allSubmissions;
 }
-
 async function loadSubmissions(){
   try{
     await fetchSubmissions();
     renderSubList(currentRevTab);
-    const pending=allSubmissions.filter(s=>s.status==='pending').length;
-    document.getElementById('rev-pending-badge').textContent=pending>0?'⏳ '+pending+' на перевірці':'✅ Всі перевірені';
+    const p=allSubmissions.filter(s=>s.status==='pending').length;
+    document.getElementById('rev-pending-badge').textContent=p>0?'⏳ '+p+' на перевірці':'✅ Всі перевірені';
   }catch(e){toast('Помилка: '+e.message,'err');}
 }
-
 function revTab(tab,btn){
   currentRevTab=tab;
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
   renderSubList(tab);
 }
-
 function renderSubList(tab){
   let list=allSubmissions;
   if(tab==='pending') list=allSubmissions.filter(s=>s.status==='pending');
-  if(tab==='done') list=allSubmissions.filter(s=>s.status==='reviewed');
+  if(tab==='done')    list=allSubmissions.filter(s=>s.status==='reviewed');
   const el=document.getElementById('rev-list');
   if(!list.length){el.innerHTML='<div class="empty">Немає робіт 📋</div>';return;}
   el.innerHTML=list.map(s=>`
     <div class="sub-card" onclick="openReview('${s.id}')">
       <div class="sub-top">
-        <div>
-          <div class="sub-name">${s.candidate_name}</div>
-          <div class="sub-meta">${s.candidate_email} · ${formatDt(s.submitted_at)}</div>
-        </div>
-        <div style="text-align:right">
-          <div class="sub-score">${s.total_score} / ${MAX_TOTAL}</div>
-          <div style="margin-top:4px">${s.status==='reviewed'?'<span class="badge badge-green">✅ Перевірено</span>':'<span class="badge badge-gold">⏳ На перевірці</span>'}</div>
-        </div>
+        <div><div class="sub-name">${s.candidate_name}</div><div class="sub-meta">${s.candidate_email} · ${formatDt(s.submitted_at)}</div></div>
+        <div style="text-align:right"><div class="sub-score">${s.total_score} / ${MAX_TOTAL}</div>
+          <div style="margin-top:4px">${s.status==='reviewed'?'<span class="badge badge-green">✅ Перевірено</span>':'<span class="badge badge-gold">⏳ На перевірці</span>'}</div></div>
       </div>
     </div>`).join('');
 }
-
 function backToList(){
-  if(isViewerMode){ show('viewer-screen'); viewerTab('results'); }
-  else { show('reviewer-screen'); loadSubmissions(); }
+  if(isViewerMode){show('viewer-screen');viewerTab('results');}
+  else{show('reviewer-screen');loadSubmissions();}
 }
-
-function openReview(id, readOnly=false){
-  const s=allSubmissions.find(s=>s.id===id);
-  if(!s) return;
+function openReview(id,readOnly=false){
+  const s=allSubmissions.find(s=>s.id===id);if(!s)return;
   currentReviewId=id;
   document.getElementById('rd-title').textContent='Робота: '+s.candidate_name;
   document.getElementById('rd-meta').textContent=s.candidate_email+' · '+formatDt(s.submitted_at);
   document.getElementById('rd-score-badge').textContent='Бал: '+s.total_score+' / '+MAX_TOTAL;
   const saveBtn=document.getElementById('rd-save-btn');
   if(saveBtn) saveBtn.style.display=readOnly?'none':'inline-flex';
-
   const wrap=document.getElementById('review-detail-wrap');
   let html='';
-
-  if(readOnly){
-    html+=`<div style="background:#eef3f8;border:1px solid var(--blue);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--blue)">👁️ Режим перегляду (коуч). Оцінки виставляє РОП — тут лише перегляд.</div>`;
-  }
-
-  // Auto questions
-  html+=`<div class="sec-hdr" style="margin-top:0"><div class="sec-hdr-title">Закриті питання (автоперевірка)</div><div class="sec-hdr-sub">Авто-бал: ${s.auto_score} / ${MAX_AUTO}</div></div>`;
-
+  if(readOnly) html+=`<div style="background:#eef3f8;border:1px solid var(--blue);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--blue)">👁️ Режим перегляду. Оцінки виставляє РОП.</div>`;
+  html+=`<div class="sec-hdr" style="margin-top:0"><div class="sec-hdr-title">Закриті питання</div><div class="sec-hdr-sub">Авто-бал: ${s.auto_score} / ${MAX_AUTO}</div></div>`;
   QUESTIONS.filter(q=>q.id&&q.type==='radio').forEach(q=>{
     const ans=s.answers[q.id];
-    const isCorrect=ans===q.correct;
-    html+=`<div class="rq-card ${isCorrect?'correct':'wrong'}">
-      <div class="rq-top">
-        <div class="rq-num">Питання ${q.id}</div>
-        <div class="rq-score" style="color:${isCorrect?'var(--green)':'var(--red)'}">${isCorrect?'+'+q.pts:'0'} / ${q.pts}</div>
-      </div>
+    const ok=ans===q.correct;
+    html+=`<div class="rq-card ${ok?'correct':'wrong'}">
+      <div class="rq-top"><div class="rq-num">Питання ${q.id}</div><div class="rq-score" style="color:${ok?'var(--green)':'var(--red)'}">${ok?'+'+q.pts:'0'} / ${q.pts}</div></div>
       <div class="rq-question">${q.text}</div>
       <div class="rq-answer-label">Відповідь кандидата:</div>
-      <div class="rq-answer" style="border-left:3px solid ${isCorrect?'var(--green)':'var(--red)'}">
-        ${ans!==undefined?q.opts[ans]:'— не відповів —'}
-      </div>
-      ${!isCorrect?`<div class="rq-correct">✅ Правильна відповідь: ${q.opts[q.correct]}</div>`:''}
+      <div class="rq-answer" style="border-left:3px solid ${ok?'var(--green)':'var(--red)'}">
+        ${ans!==undefined?q.opts[ans]:'— не відповів —'}</div>
+      ${!ok?`<div class="rq-correct">✅ Правильна відповідь: ${q.opts[q.correct]}</div>`:''}
     </div>`;
   });
-
-  // Open questions
-  html+=`<div class="sec-hdr"><div class="sec-hdr-title">Відкриті завдання (ручна перевірка)</div><div class="sec-hdr-sub">${readOnly?'Оцінки РОП (тільки перегляд)':'Оціни кожну відповідь'}</div></div>`;
-
+  html+=`<div class="sec-hdr"><div class="sec-hdr-title">Відкриті завдання</div><div class="sec-hdr-sub">${readOnly?'Тільки перегляд':'Оціни кожну відповідь'}</div></div>`;
   QUESTIONS.filter(q=>q.id&&q.type==='open').forEach(q=>{
     const ans=s.answers[q.id]||'';
     const ms=s.manual_scores||{};
@@ -856,106 +745,73 @@ function openReview(id, readOnly=false){
       controls=`<div class="grade-row"><span class="badge ${graded?(grade>0?'badge-green':'badge-red'):'badge-gold'}">${graded?(grade>0?'✅ Зараховано ('+grade+'/'+q.pts+')':'❌ Не зараховано (0/'+q.pts+')'):'⏳ Ще не перевірено'}</span>${cmt?'<span style="font-size:11px;color:var(--muted)">💬 '+escapeHtml(cmt)+'</span>':''}</div>`;
     } else {
       let scoreBtns='';
-      for(let sc=0; sc<=q.pts; sc++){
-        const cls = sc===0 ? 'no' : 'ok';
-        const lbl = sc===0 ? '❌ Не зараховано (0)' : ('✅ Оцінка '+sc);
-        scoreBtns += `<button class="grade-btn ${cls} ${graded&&grade===sc?'active':''}" id="gbtn_${q.id}_${sc}" onclick="gradeOpen(${q.id},${sc})">${lbl}</button>`;
+      for(let sc=0;sc<=q.pts;sc++){
+        scoreBtns+=`<button class="grade-btn ${sc===0?'no':'ok'} ${graded&&grade===sc?'active':''}" id="gbtn_${q.id}_${sc}" onclick="gradeOpen(${q.id},${sc})">${sc===0?'❌ Не зараховано (0)':'✅ Оцінка '+sc}</button>`;
       }
-      controls=`<div class="grade-row">
-        ${scoreBtns}
-        <input class="grade-comment" id="gcomment_${q.id}" placeholder="Коментар РОП (необов'язково)" value="${ms['comment_'+q.id]||''}">
-      </div>`;
+      controls=`<div class="grade-row">${scoreBtns}<input class="grade-comment" id="gcomment_${q.id}" placeholder="Коментар РОП" value="${ms['comment_'+q.id]||''}"></div>`;
     }
     html+=`<div class="rq-card open ${cardCls}" id="oc_${q.id}">
-      <div class="rq-top">
-        <div class="rq-num">Питання ${q.id} · Відкрите · ${q.pts} балів</div>
-        <div class="rq-score" id="oscore_${q.id}" style="color:${graded?(grade>0?'var(--green)':'var(--red)'):'var(--muted)'}">${graded?grade+' / '+q.pts:'—'}</div>
-      </div>
+      <div class="rq-top"><div class="rq-num">Питання ${q.id} · Відкрите · ${q.pts} балів</div><div class="rq-score" id="oscore_${q.id}" style="color:${graded?(grade>0?'var(--green)':'var(--red)'):'var(--muted)'}">${graded?grade+' / '+q.pts:'—'}</div></div>
       <div class="rq-question">${q.text.replace(/\n/g,'<br>')}</div>
       <div class="rq-answer-label">Відповідь кандидата:</div>
       <div class="rq-answer">${ans?escapeHtml(ans):'<em style="color:var(--muted)">Не заповнено</em>'}</div>
       ${controls}
     </div>`;
   });
-
   if(readOnly){
     const ms=s.manual_scores||{};
-    const manualTotal=QUESTIONS.filter(q=>q.id&&q.type==='open').reduce((sum,q)=>sum+(ms[q.id]||0),0);
-    const total=s.auto_score+manualTotal;
-    html+=`<div class="submit-card">
-      <div class="submit-info">Автобал: ${s.auto_score}/${MAX_AUTO} + Відкриті: ${manualTotal}/${MAX_OPEN} = Загалом: ${total}/${MAX_TOTAL}</div>
-      <div>${s.status==='reviewed'?'<span class="badge badge-green">✅ Перевірено РОП</span>':'<span class="badge badge-gold">⏳ Ще на перевірці у РОП</span>'}</div>
+    const mt=QUESTIONS.filter(q=>q.id&&q.type==='open').reduce((sum,q)=>sum+(ms[q.id]||0),0);
+    html+=`<div class="submit-card"><div class="submit-info">Автобал: ${s.auto_score}/${MAX_AUTO} + Відкриті: ${mt}/${MAX_OPEN} = Загалом: ${s.auto_score+mt}/${MAX_TOTAL}</div>
+      <div>${s.status==='reviewed'?'<span class="badge badge-green">✅ Перевірено РОП</span>':'<span class="badge badge-gold">⏳ Ще на перевірці</span>'}</div>
       ${s.reviewer_comment?`<div style="margin-top:12px;background:#ede8dc;border-radius:8px;padding:10px 12px;font-size:12px;text-align:left">💬 <strong>Коментар РОП:</strong> ${escapeHtml(s.reviewer_comment)}</div>`:''}
     </div>`;
   } else {
-    html+=`<div class="submit-card">
-      <div class="submit-info" id="rd-total-info">Виставте оцінки за всі відкриті завдання і збережіть результат.</div>
+    html+=`<div class="submit-card"><div class="submit-info" id="rd-total-info">Виставте оцінки і збережіть результат.</div>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
         <input class="grade-comment" id="rev-final-comment" placeholder="Загальний коментар РОП..." style="max-width:300px;padding:9px 12px" value="${s.reviewer_comment||''}">
         <button class="btn btn-gold" onclick="saveGrades()">💾 Зберегти результат</button>
-      </div>
-    </div>`;
+      </div></div>`;
   }
-
   wrap.innerHTML=html;
   show('review-detail-screen');
   if(!readOnly) updateRdScore();
 }
-
-let pendingGrades={};
-
 function gradeOpen(qId,score){
   const q=QUESTIONS.find(q=>q.id===qId);
   const s=allSubmissions.find(s=>s.id===currentReviewId);
   if(!s.manual_scores) s.manual_scores={};
   s.manual_scores[qId]=score;
-  // Update comment
-  const commentEl=document.getElementById('gcomment_'+qId);
-  if(commentEl) s.manual_scores['comment_'+qId]=commentEl.value;
-  // Toggle active state across all score buttons of this question
-  for(let sc=0; sc<=q.pts; sc++){
-    const b=document.getElementById('gbtn_'+qId+'_'+sc);
-    if(b) b.classList.toggle('active',sc===score);
-  }
-  const scoreEl=document.getElementById('oscore_'+qId);
-  if(scoreEl){scoreEl.textContent=score+' / '+q.pts;scoreEl.style.color=score>0?'var(--green)':'var(--red)';}
+  const c=document.getElementById('gcomment_'+qId);
+  if(c) s.manual_scores['comment_'+qId]=c.value;
+  for(let sc=0;sc<=q.pts;sc++){const b=document.getElementById('gbtn_'+qId+'_'+sc);if(b)b.classList.toggle('active',sc===score);}
+  const se=document.getElementById('oscore_'+qId);
+  if(se){se.textContent=score+' / '+q.pts;se.style.color=score>0?'var(--green)':'var(--red)';}
   const card=document.getElementById('oc_'+qId);
   if(card){card.classList.remove('graded-ok','graded-no');card.classList.add(score>0?'graded-ok':'graded-no');}
   updateRdScore();
 }
-
 function updateRdScore(){
-  const s=allSubmissions.find(s=>s.id===currentReviewId);
-  if(!s) return;
+  const s=allSubmissions.find(s=>s.id===currentReviewId);if(!s)return;
   const ms=s.manual_scores||{};
-  const manualTotal=QUESTIONS.filter(q=>q.id&&q.type==='open').reduce((sum,q)=>sum+(ms[q.id]||0),0);
-  const total=s.auto_score+manualTotal;
+  const mt=QUESTIONS.filter(q=>q.id&&q.type==='open').reduce((sum,q)=>sum+(ms[q.id]||0),0);
+  const total=s.auto_score+mt;
   document.getElementById('rd-score-badge').textContent='Бал: '+total+' / '+MAX_TOTAL;
   const info=document.getElementById('rd-total-info');
-  if(info) info.textContent=`Автобал: ${s.auto_score}/${MAX_AUTO} + Відкриті: ${manualTotal}/${MAX_OPEN} = Загалом: ${total}/${MAX_TOTAL}`;
+  if(info) info.textContent=`Автобал: ${s.auto_score}/${MAX_AUTO} + Відкриті: ${mt}/${MAX_OPEN} = Загалом: ${total}/${MAX_TOTAL}`;
 }
-
 async function saveGrades(){
-  const s=allSubmissions.find(s=>s.id===currentReviewId);
-  if(!s) return;
-  // Collect comments
+  const s=allSubmissions.find(s=>s.id===currentReviewId);if(!s)return;
   const ms=s.manual_scores||{};
-  QUESTIONS.filter(q=>q.id&&q.type==='open').forEach(q=>{
-    const c=document.getElementById('gcomment_'+q.id);
-    if(c) ms['comment_'+q.id]=c.value;
-  });
-  const finalComment=document.getElementById('rev-final-comment');
-  const manualTotal=QUESTIONS.filter(q=>q.id&&q.type==='open').reduce((sum,q)=>sum+(ms[q.id]||0),0);
-  const total=s.auto_score+manualTotal;
+  QUESTIONS.filter(q=>q.id&&q.type==='open').forEach(q=>{const c=document.getElementById('gcomment_'+q.id);if(c)ms['comment_'+q.id]=c.value;});
+  const fc=document.getElementById('rev-final-comment');
+  const mt=QUESTIONS.filter(q=>q.id&&q.type==='open').reduce((sum,q)=>sum+(ms[q.id]||0),0);
+  const total=s.auto_score+mt;
   const btn=document.getElementById('rd-save-btn');
   btn.disabled=true;btn.textContent='Зберігаємо...';
   try{
     await sbFetch('exam_submissions?id=eq.'+currentReviewId,'PATCH',{
-      manual_scores:ms,
-      total_score:total,
-      status:'reviewed',
-      reviewer_comment:finalComment?finalComment.value:'',
-      reviewed_at:new Date().toISOString()
+      manual_scores:ms,total_score:total,status:'reviewed',
+      reviewer_comment:fc?fc.value:'',reviewed_at:new Date().toISOString()
     });
     toast('✅ Результат збережено!','ok');
     s.total_score=total;s.status='reviewed';s.manual_scores=ms;
@@ -964,31 +820,14 @@ async function saveGrades(){
   btn.disabled=false;btn.textContent='💾 Зберегти оцінки';
 }
 
-// ══════════════════════════════════════════════════════
-// HELPERS
-// ══════════════════════════════════════════════════════
-function formatDt(dt){
-  if(!dt) return '';
-  const d=new Date(dt);
-  return d.toLocaleDateString('uk-UA')+' '+d.toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
-}
-
-function escapeHtml(str){
-  return String(str).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-}
-
+// ── Helpers ──
+function formatDt(dt){if(!dt)return'';const d=new Date(dt);return d.toLocaleDateString('uk-UA')+' '+d.toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});}
+function escapeHtml(str){return String(str).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 let toastTimer;
-function toast(msg,type='ok'){
-  const el=document.getElementById('toast');
-  el.textContent=msg;el.className='toast show '+(type||'');
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>el.className='toast',3500);
-}
+function toast(msg,type='ok'){const el=document.getElementById('toast');el.textContent=msg;el.className='toast show '+(type||'');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.className='toast',3500);}
 
-// ══════════════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════════════
-(function init(){
+// ── Init ──
+(function(){
   SB_URL='https://yctzcbaynycuibkqmwqd.supabase.co';
   SB_KEY='sb_publishable_pBkmNRVX61ELGcs1HqGV-Q_kBrVJWQA';
   showRole();

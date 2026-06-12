@@ -293,6 +293,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
       <span id="rd-score-badge" class="badge badge-gold"></span>
       <button class="btn btn-outline" onclick="backToList()" style="font-size:11px;padding:6px 12px">← Назад</button>
       <button class="btn btn-gold" id="rd-save-btn" onclick="saveGrades()" style="font-size:11px;padding:6px 16px">💾 Зберегти оцінки</button>
+      <button class="btn" id="rd-delete-btn" onclick="deleteSubmission(currentReviewId)" style="font-size:11px;padding:6px 12px;background:#fde8e8;border:1.5px solid var(--red);color:var(--red)">🗑️ Видалити</button>
     </div>
   </div>
   <div class="wrap" id="review-detail-wrap"></div>
@@ -449,7 +450,8 @@ const MAX_TOTAL = MAX_AUTO + MAX_OPEN;
 
 // ── Supabase ──
 async function sbFetch(path,method='GET',body=null){
-  const opts={method,headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Prefer':'return=representation'}};
+  const prefer=method==='DELETE'?'return=minimal':'return=representation';
+  const opts={method,headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Prefer':prefer}};
   if(body) opts.body=JSON.stringify(body);
   const res=await fetch(SB_URL+'/rest/v1/'+path,opts);
   if(!res.ok){const t=await res.text();throw new Error(t);}
@@ -696,13 +698,37 @@ function renderSubList(tab){
   const el=document.getElementById('rev-list');
   if(!list.length){el.innerHTML='<div class="empty">Немає робіт 📋</div>';return;}
   el.innerHTML=list.map(s=>`
-    <div class="sub-card" onclick="openReview('${s.id}')">
+    <div class="sub-card" id="subcard_${s.id}" onclick="openReview('${s.id}')">
       <div class="sub-top">
         <div><div class="sub-name">${s.candidate_name}</div><div class="sub-meta">${s.candidate_email} · ${formatDt(s.submitted_at)}</div></div>
-        <div style="text-align:right"><div class="sub-score">${s.total_score} / ${MAX_TOTAL}</div>
-          <div style="margin-top:4px">${s.status==='reviewed'?'<span class="badge badge-green">✅ Перевірено</span>':'<span class="badge badge-gold">⏳ На перевірці</span>'}</div></div>
+        <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+          <div class="sub-score">${s.total_score} / ${MAX_TOTAL}</div>
+          <div style="display:flex;align-items:center;gap:6px">
+            ${s.status==='reviewed'?'<span class="badge badge-green">✅ Перевірено</span>':'<span class="badge badge-gold">⏳ На перевірці</span>'}
+            <button onclick="event.stopPropagation();deleteSubmission('${s.id}')" style="background:#fde8e8;border:1.5px solid var(--red);color:var(--red);border-radius:7px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer">🗑️</button>
+          </div>
+        </div>
       </div>
     </div>`).join('');
+}
+
+async function deleteSubmission(id){
+  if(!confirm('Видалити цю роботу? Дія незворотна!')) return;
+  try{
+    await sbFetch('exam_submissions?id=eq.'+id,'DELETE');
+    allSubmissions=allSubmissions.filter(s=>s.id!==id);
+    toast('🗑️ Роботу видалено','ok');
+    // if we're in detail view, go back to list
+    const detailScreen=document.getElementById('review-detail-screen');
+    if(detailScreen&&detailScreen.style.display!=='none'){
+      backToList();
+    } else {
+      renderSubList(currentRevTab);
+      const p=allSubmissions.filter(s=>s.status==='pending').length;
+      const badge=document.getElementById('rev-pending-badge');
+      if(badge) badge.textContent=p>0?'⏳ '+p+' на перевірці':'✅ Всі перевірені';
+    }
+  }catch(e){toast('Помилка видалення: '+e.message,'err');}
 }
 function backToList(){
   if(isViewerMode){show('viewer-screen');viewerTab('results');}
